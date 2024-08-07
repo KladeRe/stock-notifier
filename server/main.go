@@ -11,7 +11,10 @@ import (
 func main() {
     result := symbolSearch("IBM")
     fmt.Printf("%+v\n", result)
-    sendEmail()
+
+    result2 := decodeJSONConfig(readFile("./config.json"))
+
+    fmt.Printf(result2.Notification)
     return 
 }
 

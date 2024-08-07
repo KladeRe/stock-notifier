@@ -3,6 +3,9 @@ package main
 import(
 	"log"
 	"net/smtp"
+	"github.com/joho/godotenv"
+	"os"
+	"fmt"
 )
 
 func sendEmail(message []byte) {
@@ -20,7 +23,7 @@ func sendEmail(message []byte) {
 
 	to := []string{receiver}
 
-	msg := []byte("To: " + receiver + "\r\n" + "Subject: Hello from my new SMTP server\r\n" + "\r\n" + message)
+	msg := []byte("To: " + receiver + "\r\n" + "Subject: Hello from my new SMTP server\r\n" + "\r\n" + string(message))
 
 	err := smtp.SendMail("smtp.gmail.com:587", auth, sender, to, msg)
 

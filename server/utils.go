@@ -8,6 +8,8 @@ import (
     "log"
 )
 
+
+
 type Quote struct {
     Global_Quote struct {
         Symbol string `json:"01. symbol"`
@@ -23,6 +25,8 @@ type Quote struct {
     } `json:"Global Quote"`
 
 }
+
+
 
 func getAPIKey() string {
     // Getting api key from .env file
