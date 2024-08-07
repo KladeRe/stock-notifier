@@ -36,6 +36,7 @@ func getAPIKey() string {
 
 }
 
+
 func decodeJSON(responseBody []uint8) Quote {
     // variable to store JSON data in
     var quote Quote

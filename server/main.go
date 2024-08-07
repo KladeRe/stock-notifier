@@ -11,6 +11,7 @@ import (
 func main() {
     result := symbolSearch("IBM")
     fmt.Printf("%+v\n", result)
+    sendEmail()
     return 
 }
 
