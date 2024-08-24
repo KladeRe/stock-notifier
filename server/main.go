@@ -5,6 +5,7 @@ import (
     "fmt"
     "io"
     "log"
+    "github.com/KladeRe/stock-server/config"
 )
 
 
@@ -12,9 +13,15 @@ func main() {
     result := symbolSearch("IBM")
     fmt.Printf("%+v\n", result)
 
-    result2 := decodeJSONConfig(readFile("./config.json"))
+    fileData, err := config.ReadFile("./config.json")
+    if (err != nil) {
+        log.Fatal("Error while opening file")
+        return
+    }
+    fmt.Printf(string(fileData))
+    result2 := config.DecodeJSONConfig(fileData)
 
-    fmt.Printf(result2.Notification)
+    fmt.Printf(result2[0].Notification)
     return 
 }
 
