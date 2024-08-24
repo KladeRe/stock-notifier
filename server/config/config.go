@@ -3,7 +3,6 @@ package config
 import(
     "encoding/json"
     "io/ioutil"
-    "log"
 
 )
 
@@ -16,16 +15,16 @@ type StockConfig struct {
 
 
 
-func DecodeJSONConfig(content []uint8) []StockConfig {
+func DecodeJSONConfig(content []uint8) ([]StockConfig, error) {
     var config []StockConfig
 
     unmarshalError := json.Unmarshal([]byte(content), &config)
 
     if (unmarshalError != nil) {
-        log.Fatal(unmarshalError)
+        return []StockConfig{}, unmarshalError
     }
 
-    return config
+    return config, nil
 }
 
 func ReadFile(path string) ([]uint8, error) {

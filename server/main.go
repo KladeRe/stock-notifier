@@ -19,7 +19,10 @@ func main() {
         return
     }
     fmt.Printf(string(fileData))
-    result2 := config.DecodeJSONConfig(fileData)
+    result2, err2 := config.DecodeJSONConfig(fileData)
+    if (err2 != nil) {
+        log.Fatal("Error while converting to built in data structure")
+    }
 
     fmt.Printf(result2[0].Notification)
     return 
