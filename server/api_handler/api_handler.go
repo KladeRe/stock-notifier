@@ -1,11 +1,10 @@
-package main
+package api_handler
 
 import (
-    "fmt"
-    "os"
     "encoding/json"
-    "github.com/joho/godotenv"
-    "log"
+	"github.com/KladeRe/stock-server/utils"
+	"net/http"
+	"io"
 )
 
 
@@ -27,29 +26,35 @@ type Quote struct {
 }
 
 
-
-func getAPIKey() string {
-    // Getting api key from .env file
-    envError := godotenv.Load()
-    if envError != nil {
-        fmt.Printf("Couldn't load .env file")
-    }
-    api_key := os.Getenv("API_KEY")
-
-    return api_key
-
-}
-
-
-func decodeJSON(responseBody []uint8) Quote {
+func DecodeResponseJSON(responseBody []uint8) (Quote, error) {
     // variable to store JSON data in
     var quote Quote
 
     unmarshalError := json.Unmarshal([]byte(responseBody), &quote)
 
     if unmarshalError != nil {
-		log.Fatal(unmarshalError)
+		return Quote{}, unmarshalError
 	}
-    return quote
+    return quote, nil
+
+}
+
+func SymbolSearch(keyword string) (Quote, error) {
+
+    api_key := utils.GetAPIKey()
+    
+    url := "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + keyword + "&apikey=" +  api_key
+    resp, requestErr := http.Get(url)
+    if requestErr != nil {
+        return Quote{}, requestErr
+    }
+
+    defer resp.Body.Close()
+    body, readErr := io.ReadAll(resp.Body)
+    if (readErr != nil) {
+        return Quote{}, readErr
+    }
+
+    return DecodeResponseJSON(body)
 
 }

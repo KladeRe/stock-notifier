@@ -1,53 +1,43 @@
 package main
 
 import (
-    "net/http"
     "fmt"
-    "io"
     "log"
     "github.com/KladeRe/stock-server/config"
+    "github.com/KladeRe/stock-server/api_handler"
 )
 
-
 func main() {
-    result := symbolSearch("IBM")
-    fmt.Printf("%+v\n", result)
-
-    fileData, err := config.ReadFile("./config.json")
-    if (err != nil) {
-        log.Fatal("Error while opening file")
+    rawFileData, fileReadErr := config.ReadFile("./config.json")
+    if (fileReadErr!= nil) {
+        log.Fatal(fileReadErr)
         return
     }
-    fmt.Printf(string(fileData))
-    result2, err2 := config.DecodeJSONConfig(fileData)
-    if (err2 != nil) {
-        log.Fatal("Error while converting to built in data structure")
+
+    fmt.Printf(string(rawFileData))
+
+    data, conversionErr := config.DecodeJSONConfig(rawFileData)
+    if (conversionErr != nil) {
+        log.Fatal(conversionErr)
+        return
     }
 
-    fmt.Printf(result2[0].Notification)
+    fmt.Printf(data[0].Notification)
+
+    for i := 0; i < len(data); i++ {
+        result, searchErr := api_handler.SymbolSearch(data[i].Symbol)
+        if (searchErr != nil) {
+            log.Fatal(searchErr)
+        }
+        fmt.Printf("%+v\n", result.Global_Quote.Price)
+    }
+    
+    
     return 
 }
 
 
-func symbolSearch(keyword string) Quote {
 
-    api_key := getAPIKey()
-    
-    url := "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + keyword + "&apikey=" +  api_key
-    resp, requestErr := http.Get(url)
-    if requestErr != nil {
-        log.Fatal(requestErr)
-    }
-
-    defer resp.Body.Close()
-    body, readErr := io.ReadAll(resp.Body)
-    if (readErr != nil) {
-        log.Fatal(readErr)
-    }
-
-    return decodeJSON(body)
-
-}
 
 
 
