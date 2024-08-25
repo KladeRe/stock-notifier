@@ -1,21 +1,20 @@
 package utils
 
 import (
-    "fmt"
     "os"
     "github.com/joho/godotenv"
 
 )
 
-func GetAPIKey() string {
+func GetAPIKey() (string, error) {
     // Getting api key from .env file
     envError := godotenv.Load()
     if envError != nil {
-        fmt.Printf("Couldn't load .env file")
+        return "", envError
     }
     api_key := os.Getenv("API_KEY")
 
-    return api_key
+    return api_key, nil
 
 }
 

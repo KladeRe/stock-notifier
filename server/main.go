@@ -22,12 +22,12 @@ func main() {
         return
     }
 
-    fmt.Printf(data[0].Notification)
+    fmt.Println(data[0].Notification)
 
     for i := 0; i < len(data); i++ {
         result, searchErr := api_handler.SymbolSearch(data[i].Symbol)
         if (searchErr != nil) {
-            log.Fatal(searchErr)
+            log.Println(searchErr)
         }
         fmt.Printf("%+v\n", result.Global_Quote.Price)
     }
