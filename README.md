@@ -2,7 +2,7 @@
 
 An application that gives notifications for selected stocks. 
 
-**Any default values in this application should never be taken as financial advice. This program is built to able to control your notifications and to give you complete control.**
+**Any default values in this application should NEVER be taken as financial advice. This program is built to able to control your notifications and to give you complete control.**
 
 Dependencies:
 
