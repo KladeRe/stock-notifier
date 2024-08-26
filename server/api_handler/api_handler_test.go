@@ -46,3 +46,49 @@ func TestDecodeResponseJSONEmpty(t *testing.T) {
 		t.Fatalf(`DecodeResponseJSON(bad input) = wanted unexpected end of JSON input, got %q, nil`, msg)
 	}
 }
+
+func TestSymbolSearchRealSymbol(t *testing.T) {
+	msg, err := SymbolSearch("IBM", "demo")
+
+	if (err != nil) {
+		t.Fatalf(`SymbolSearch("Test") = wanted no error, got %q, %v`, msg, err)
+	}
+}
+
+func TestCheckDecodedJSONReal(t *testing.T) {
+	keyword := "Test"
+
+	input := Quote{}
+	input.Global_Quote = Global_Quote{}
+	input.Global_Quote.Symbol = keyword
+	input.Global_Quote.Open = "196.7900"
+	input.Global_Quote.High = "197.3800"
+	input.Global_Quote.Low = "194.3900"
+	input.Global_Quote.Price = "196.1000"
+	input.Global_Quote.Volume = "2321961"
+	input.Global_Quote.Ltd = "2024-08-23"
+	input.Global_Quote.Previous_close = "195.9600"
+	input.Global_Quote.Change = "0.1400"
+	input.Global_Quote.Change_percent = "0.0714%"
+
+
+	msg, err := CheckDecodedJSON(input, keyword)
+
+	if (msg != input || err != nil) {
+		t.Fatalf(`CheckDecodedJSON(good input, "Test") = %q, %v, want match for %#q, nil`, msg, err, input)
+	}
+}
+
+func TestCheckDecodedJSONFake(t *testing.T) {
+	input := Quote{}
+
+	msg, err := CheckDecodedJSON(input, "Test")
+
+	if (msg != input || err == nil) {
+		t.Fatalf(`CheckDecodedJSON(bad input, "Test") = %q, %v, want match for %#q, nil`, msg, err, input)
+	}
+
+
+
+}
+

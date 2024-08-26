@@ -2,11 +2,9 @@ package api_handler
 
 import (
     "encoding/json"
-	"github.com/KladeRe/stock-server/utils"
 	"net/http"
 	"io"
 	"errors"
-	"fmt"
 )
 
 type Quote struct {
@@ -42,42 +40,33 @@ func DecodeResponseJSON(responseBody []uint8) (Quote, error) {
 
 }
 
-func SymbolSearch(keyword string) (Quote, error) {
+func SymbolSearch(keyword string, api_key string) ([]uint8, error) {
 
-    api_key, keyError := utils.GetAPIKey()
-
-	if (keyError != nil) {
-		return Quote{}, keyError
-	}
-    
     url := "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + keyword + "&apikey=" +  api_key
     resp, requestErr := http.Get(url)
+
     if requestErr != nil {
-        return Quote{}, requestErr
+        return []uint8{}, requestErr
     }
 
     defer resp.Body.Close()
 
     body, readErr := io.ReadAll(resp.Body)
 
-	fmt.Println(string(body))
-    if (readErr != nil) {
-        return Quote{}, readErr
-    }
-	stock, decodeError := DecodeResponseJSON(body)
+	return body, readErr
+	
+	
 
-	if (decodeError != nil) {
-		return Quote{}, decodeError
-	}
+}
+
+func CheckDecodedJSON(parsed Quote, keyword string) (Quote, error) {
 
 	// For checking whether the body actually includes any info
-	if (stock == Quote{}) {
+	if (parsed == Quote{}) {
 		symbolError := errors.New("Couldn't find stock info for " + keyword)
 		return Quote{}, symbolError
 	}
 
-	fmt.Println(stock)
-
-	return stock, nil
+	return parsed, nil
 
 }
