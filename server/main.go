@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "log"
+    "strconv"
     "github.com/KladeRe/stock-server/config"
     "github.com/KladeRe/stock-server/api_handler"
     "github.com/KladeRe/stock-server/utils"
@@ -18,10 +19,8 @@ func main() {
         return
     }
 
-    fmt.Printf(string(rawFileData))
-
     // Convert the data in the config to native data structure
-    data, conversionErr := config.DecodeJSONConfig(rawFileData)
+    config_data, conversionErr := config.DecodeJSONConfig(rawFileData)
     if (conversionErr != nil) {
         log.Fatal(conversionErr)
         return
@@ -35,11 +34,12 @@ func main() {
 		log.Fatal(keyError)
 	}
 
+
     // Iterate over stored data and fetch stock data based on symbol
-    for i := 0; i < len(data); i++ {
+    for i := 0; i < len(config_data); i++ {
 
         // Fetch response from API
-        response, responseError := api_handler.SymbolSearch(data[i].Symbol, api_key)
+        response, responseError := api_handler.SymbolSearch(config_data[i].Symbol, api_key)
         if (responseError != nil) {
             log.Println(responseError)
         }
@@ -51,12 +51,29 @@ func main() {
         }
 
         // Check whether data structure is empty
-        sanitized, sanitizationError := api_handler.CheckDecodedJSON(decoded, data[i].Symbol)
+        sanitized, sanitizationError := api_handler.CheckDecodedJSON(decoded, config_data[i].Symbol)
         if (sanitizationError != nil) {
             log.Println(sanitizationError)
         }
 
         fmt.Printf("%+v\n", sanitized.Global_Quote.Price)
+
+        parsedPrice, _ := strconv.ParseFloat(sanitized.Global_Quote.Price, 32)
+
+        endPrice := float32(parsedPrice)
+
+        if (config_data[i].Buy == true && endPrice<= config_data[i].Value) {
+            fmt.Printf(`%s has now dropped below the price you are waiting for`, config_data[i].Symbol)
+            continue
+        } 
+
+        if (config_data[i].Buy == false && endPrice >= config_data[i].Value) {
+            fmt.Printf(`%s has now risen over the price you are waiting for`, config_data[i].Symbol)
+            continue
+        } 
+
+        fmt.Printf("Better luck next time!")
+
     }
     
     
