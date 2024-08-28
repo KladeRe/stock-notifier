@@ -8,6 +8,8 @@ import (
 
 func main() {
 	router := gin.Default()
+	router.ForwardedByClientIP = true
+	router.SetTrustedProxies([]string{"127.0.0.1"})
 	router.GET("/config", getConfig)
 	router.Run("localhost:8080")
 }

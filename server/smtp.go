@@ -1,23 +1,23 @@
 package main
 
-import(
+import (
+	"fmt"
 	"log"
 	"net/smtp"
-	"github.com/joho/godotenv"
 	"os"
-	"fmt"
+
+	"github.com/joho/godotenv"
 )
 
-func sendEmail(message []byte) {
+func SendEmail(message []byte) {
 
 	envError := godotenv.Load()
-    if envError != nil {
-        fmt.Printf("Couldn't load .env file")
-    }
-    sender := os.Getenv("SENDER")
+	if envError != nil {
+		fmt.Printf("Couldn't load .env file")
+	}
+	sender := os.Getenv("SENDER")
 	receiver := os.Getenv("RECEIVER")
 	password := os.Getenv("PASSWORD")
-
 
 	auth := smtp.PlainAuth("", sender, password, "smtp.gmail.com")
 
@@ -30,6 +30,6 @@ func sendEmail(message []byte) {
 	if err != nil {
 
 		log.Fatal(err)
-		
+
 	}
 }
