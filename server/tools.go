@@ -5,36 +5,16 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/KladeRe/stock-server/api_handler"
-	"github.com/KladeRe/stock-server/config"
+	api_handler "github.com/KladeRe/stock-server/external/alphavantage"
+
 	"github.com/KladeRe/stock-server/internal/utils"
 )
 
-func getFileData(location string) []config.StockConfig {
-
-	// Get the raw data from the config file
-	rawFileData, fileReadErr := config.ReadFile(location)
-	if fileReadErr != nil {
-		log.Fatal(fileReadErr)
-		return []config.StockConfig{}
-	}
-
-	// Convert the data in the config to native data structure
-	config_data, conversionErr := config.DecodeJSONConfig(rawFileData)
-	if conversionErr != nil {
-		log.Fatal(conversionErr)
-		return []config.StockConfig{}
-	}
-
-	return config_data
-
-}
-
-func getStockData(config_data config.StockConfig, api_key string) {
+func getStockData(config_data string, api_key string) {
 	// Iterate over stored data and fetch stock data based on symbol
 
 	// Fetch response from API
-	response, responseError := api_handler.SymbolSearch(config_data.Symbol, api_key)
+	response, responseError := api_handler.SymbolSearch(config_data, api_key)
 	if responseError != nil {
 		log.Println(responseError)
 	}
@@ -46,7 +26,7 @@ func getStockData(config_data config.StockConfig, api_key string) {
 	}
 
 	// Check whether data structure is empty
-	sanitized, sanitizationError := api_handler.CheckDecodedJSON(decoded, config_data.Symbol)
+	sanitized, sanitizationError := api_handler.CheckDecodedJSON(decoded, config_data)
 	if sanitizationError != nil {
 		log.Println(sanitizationError)
 	}
@@ -57,21 +37,13 @@ func getStockData(config_data config.StockConfig, api_key string) {
 
 	endPrice := float32(parsedPrice)
 
-	if config_data.Buy && endPrice <= config_data.Value {
-		fmt.Printf(`%s has now dropped below the price you are waiting for`, config_data.Symbol)
-		return
-	}
-
-	if !config_data.Buy && endPrice >= config_data.Value {
-		fmt.Printf(`%s has now risen over the price you are waiting for`, config_data.Symbol)
-		return
-	}
+	fmt.Println(endPrice)
 
 	fmt.Printf("Better luck next time!")
 
 }
 
-func getAllStocks(config_data []config.StockConfig) {
+func getAllStocks(config_data []string) {
 	api_key, key_error := utils.GetAPIKey()
 	if key_error != nil {
 		log.Fatal(key_error)
