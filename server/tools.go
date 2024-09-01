@@ -7,7 +7,7 @@ import (
 
 	"github.com/KladeRe/stock-server/api_handler"
 	"github.com/KladeRe/stock-server/config"
-	"github.com/KladeRe/stock-server/utils"
+	"github.com/KladeRe/stock-server/internal/utils"
 )
 
 func getFileData(location string) []config.StockConfig {
