@@ -21,17 +21,28 @@ type StockConfig struct {
 	Notification string             `bson:"notification"`
 }
 
-func EstablishDBClient() (*mongo.Client, error) {
+type DB_Client struct {
+	mongo_client     *mongo.Client
+	mongo_collection *mongo.Collection
+}
+
+func getCollection(client *mongo.Client) *mongo.Collection {
+	// Access a specific database and collection
+	collection := client.Database("stockconfig").Collection("stocks")
+	return collection
+}
+
+func EstablishDBClient() *DB_Client {
 	DB_HOST, hostError := utils.GetEnvVariable("DB_HOST")
 
 	DB_PORT, portError := utils.GetEnvVariable(("DB_PORT"))
 
 	if portError != nil {
-		return &mongo.Client{}, portError
+		log.Fatal(portError)
 	}
 
 	if hostError != nil {
-		return &mongo.Client{}, hostError
+		log.Fatal(hostError)
 	}
 
 	// MongoDB URI (connect to your local MongoDB instance)
@@ -40,26 +51,24 @@ func EstablishDBClient() (*mongo.Client, error) {
 	// Connect to MongoDB
 	client, connectionErr := mongo.Connect(context.TODO(), clientOptions)
 	if connectionErr != nil {
-		return &mongo.Client{}, connectionErr
+		log.Fatal(connectionErr)
 	}
 
 	// Check the connection
 	pingErr := client.Ping(context.TODO(), nil)
 	if pingErr != nil {
-		return &mongo.Client{}, pingErr
+		log.Fatal(pingErr)
 	}
 
-	return client, nil
+	newCollection := getCollection(client)
+
+	database_client := DB_Client{client, newCollection}
+
+	return &database_client
 }
 
-func GetCollection(client *mongo.Client) *mongo.Collection {
-	// Access a specific database and collection
-	collection := client.Database("stockconfig").Collection("stocks")
-	return collection
-}
-
-func CloseClient(client *mongo.Client) (string, error) {
-	err := client.Disconnect(context.TODO())
+func (client *DB_Client) CloseClient() (string, error) {
+	err := client.mongo_client.Disconnect(context.TODO())
 	if err != nil {
 		return "", err
 	}
@@ -67,10 +76,10 @@ func CloseClient(client *mongo.Client) (string, error) {
 	return "Connection to DB closed", nil
 }
 
-func AddDocument(collection *mongo.Collection, newConfig StockConfig) {
+func (client *DB_Client) AddDocument(newConfig StockConfig) {
 
 	// Insert the document into the collection
-	insertResult, err := collection.InsertOne(context.TODO(), newConfig)
+	insertResult, err := client.mongo_collection.InsertOne(context.TODO(), newConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,9 +88,9 @@ func AddDocument(collection *mongo.Collection, newConfig StockConfig) {
 
 }
 
-func DeleteDocument(collection *mongo.Collection, id primitive.ObjectID) (string, error) {
+func (client *DB_Client) DeleteDocument(id primitive.ObjectID) (string, error) {
 	filter := bson.M{"_id": id}
-	deleteResult, deleteErr := collection.DeleteOne(context.TODO(), filter)
+	deleteResult, deleteErr := client.mongo_collection.DeleteOne(context.TODO(), filter)
 	if deleteErr != nil {
 		return "", deleteErr
 	}
@@ -93,9 +102,9 @@ func DeleteDocument(collection *mongo.Collection, id primitive.ObjectID) (string
 
 }
 
-func GetAllDocuments(collection *mongo.Collection) ([]StockConfig, error) {
+func (client *DB_Client) GetAllDocuments() ([]StockConfig, error) {
 	results := []StockConfig{}
-	cursor, cursorErr := collection.Find(context.TODO(), bson.D{})
+	cursor, cursorErr := client.mongo_collection.Find(context.TODO(), bson.D{})
 	if cursorErr != nil {
 		return []StockConfig{}, cursorErr
 	}
@@ -110,4 +119,20 @@ func GetAllDocuments(collection *mongo.Collection) ([]StockConfig, error) {
 	}
 
 	return results, nil
+}
+
+func (client *DB_Client) GetDocumentBySymbol(symbol string) (StockConfig, error) {
+	filter := bson.M{"symbol": symbol}
+
+	var result StockConfig
+	err := client.mongo_collection.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return StockConfig{}, fmt.Errorf("no such document in database")
+		} else {
+			return StockConfig{}, fmt.Errorf("problem when reading database")
+		}
+
+	}
+	return result, nil
 }

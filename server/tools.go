@@ -44,7 +44,7 @@ func getStockData(config_data string, api_key string) {
 }
 
 func getAllStocks(config_data []string) {
-	api_key, key_error := utils.GetAPIKey()
+	api_key, key_error := utils.GetEnvVariable("API_KEY")
 	if key_error != nil {
 		log.Fatal(key_error)
 	}
