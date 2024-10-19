@@ -6,8 +6,6 @@ The server has multiple functions out of which they are:
 
 * Calling stock API
 
-* Sending email to user
+* Functioning as a REST API for frontend
 
 The server uses an .env file in its directory for confidential resources such as API keys and emails
-
-The config.json is a configuration file for setting the notification time and the stocks which the app should follow. The default config file should not be taken as financial advice.

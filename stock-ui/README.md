@@ -1,75 +1,50 @@
-# Nuxt 3 Minimal Starter
+# Welcome to your Expo app 👋
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Setup
+## Get started
 
-Make sure to install the dependencies:
+1. Install dependencies
 
-```bash
-# npm
-npm install
+   ```bash
+   npm install
+   ```
 
-# pnpm
-pnpm install
+2. Start the app
 
-# yarn
-yarn install
+   ```bash
+    npx expo start
+   ```
 
-# bun
-bun install
-```
+In the output, you'll find options to open the app in a
 
-## Development Server
+- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-Start the development server on `http://localhost:3000`:
+You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-```bash
-# npm
-npm run dev
+## Get a fresh project
 
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
+When you're ready, run:
 
 ```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+npm run reset-project
 ```
 
-Locally preview production build:
+This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-```bash
-# npm
-npm run preview
+## Learn more
 
-# pnpm
-pnpm run preview
+To learn more about developing your project with Expo, look at the following resources:
 
-# yarn
-yarn preview
+- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
 
-# bun
-bun run preview
-```
+## Join the community
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Join our community of developers creating universal apps.
+
+- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
+- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
