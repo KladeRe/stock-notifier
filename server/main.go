@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/KladeRe/stock-server/internal/database"
@@ -23,12 +22,18 @@ func main() {
 
 	router := gin.Default()
 
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Hello from server",
+		})
+	})
 	router.GET("/configs", func(c *gin.Context) {
 		documents, err := db_client.GetAllDocuments()
+
 		if err != nil {
 			c.IndentedJSON(http.StatusNoContent, err)
+			return
 		}
-		fmt.Println(documents[0].Id.Hex())
 		c.IndentedJSON(http.StatusOK, documents)
 	})
 
@@ -62,5 +67,6 @@ func main() {
 	if portError != nil {
 		port = "5050"
 	}
-	router.Run("localhost:" + port)
+
+	router.Run(":" + port)
 }

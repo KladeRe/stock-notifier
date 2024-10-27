@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  stockserver:
+    ports:
+      - "5050:5050"
+    build:
+      context: ./server
+    container_name: stockserver
+    restart: unless-stopped
+    depends_on:
+      - stockdb
+      
+
+  stockdb:
+    image: mongo:8.0
+    ports:
+      - "27017:27017"
+    container_name: stockdb
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=mongoadmin
+    volumes:
+      - mongo-data:/data/db
+    
+volumes:
+  mongo-data:
